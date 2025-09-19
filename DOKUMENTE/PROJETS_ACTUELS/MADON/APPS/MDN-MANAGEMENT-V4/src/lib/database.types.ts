@@ -18,6 +18,7 @@ export interface Database {
           enabled: boolean
           order: number
           created_at: string
+          category: 'core' | 'hr' | 'finance' | 'marketing' | 'operations' | 'other'
         }
         Insert: {
           id?: string
@@ -27,6 +28,7 @@ export interface Database {
           enabled?: boolean
           order: number
           created_at?: string
+          category: 'core' | 'hr' | 'finance' | 'marketing' | 'operations' | 'other'
         }
         Update: {
           id?: string
@@ -36,6 +38,7 @@ export interface Database {
           enabled?: boolean
           order?: number
           created_at?: string
+          category?: 'core' | 'hr' | 'finance' | 'marketing' | 'operations' | 'other'
         }
       }
       employees: {
@@ -491,6 +494,38 @@ export interface Database {
           state: string;
           platform: string;
           user_id: string;
+        };
+      };
+      tasks: {
+        Row: {
+          id: string;
+          title: string;
+          description: string;
+          status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+          priority: 'low' | 'medium' | 'high';
+          assigned_to: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          description: string;
+          status?: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+          priority: 'low' | 'medium' | 'high';
+          assigned_to: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          description?: string;
+          status?: 'pending' | 'in_progress' | 'completed' | 'cancelled';
+          priority?: 'low' | 'medium' | 'high';
+          assigned_to?: string;
+          created_at?: string;
+          updated_at?: string;
         };
       };
     }

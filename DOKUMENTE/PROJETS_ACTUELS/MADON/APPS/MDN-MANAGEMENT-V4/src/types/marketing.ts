@@ -65,4 +65,26 @@ export interface SocialMediaConnection {
   account_type: string;
   status: 'active' | 'expired' | 'revoked';
   user_id: string;
+}
+
+export interface MarketingCampaign {
+  id: string;
+  name: string;
+  status: 'active' | 'completed' | 'planned';
+  start_date: string;
+  end_date?: string;
+  budget: number;
+  results: {
+    reach: number;
+    engagement: number;
+    conversions: number;
+  };
+}
+
+export interface CustomerFeedback {
+  id: string;
+  customer_id: string;
+  rating: number;
+  comment: string;
+  created_at: string;
 } 

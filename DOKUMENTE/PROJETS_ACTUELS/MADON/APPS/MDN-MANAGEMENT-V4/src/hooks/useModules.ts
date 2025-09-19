@@ -1,89 +1,143 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../lib/supabase';
-import type { Module } from '../lib/database.types';
+import { useState, useEffect } from 'react';
+
+export interface Module {
+  id: number;
+  name: string;
+  path: string;
+  icon: string;
+  enabled: boolean;
+  order_index: number;
+  created_at: string;
+}
 
 export function useModules() {
-  const queryClient = useQueryClient();
+  const [modules, setModules] = useState<Module[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const { data: modules, isLoading } = useQuery({
-    queryKey: ['modules'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('modules')
-        .select('*')
-        .order('order');
-      
-      if (error) throw error;
-      return data as Module[];
-    }
-  });
-
-  const updateModuleOrder = useMutation({
-    mutationFn: async (updatedModules: Module[]) => {
-      // Mettre à jour l'ordre de tous les modules en une seule transaction
-      const updates = updatedModules.map((module, index) => ({
-        id: module.id,
-        order: index
-      }));
-
-      const { error } = await supabase
-        .from('modules')
-        .upsert(updates, { onConflict: 'id' });
-      
-      if (error) throw error;
-    },
-    onMutate: async (newModules) => {
-      await queryClient.cancelQueries({ queryKey: ['modules'] });
-      const previousModules = queryClient.getQueryData<Module[]>(['modules']);
-      queryClient.setQueryData(['modules'], newModules);
-      return { previousModules };
-    },
-    onError: (err, newModules, context) => {
-      if (context?.previousModules) {
-        queryClient.setQueryData(['modules'], context.previousModules);
+  useEffect(() => {
+    const fetchModules = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Simuler un délai de chargement
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Mock data pour les modules
+        const mockModules: Module[] = [
+          {
+            id: 1,
+            name: 'Tableau de Bord',
+            path: '/dashboard',
+            icon: 'LayoutDashboard',
+            enabled: true,
+            order_index: 1,
+            created_at: '2024-01-01T10:00:00Z'
+          },
+          {
+            id: 2,
+            name: 'Projets',
+            path: '/projects',
+            icon: 'Package',
+            enabled: true,
+            order_index: 2,
+            created_at: '2024-01-01T10:00:00Z'
+          },
+          {
+            id: 3,
+            name: 'Employés',
+            path: '/employees',
+            icon: 'Users',
+            enabled: true,
+            order_index: 3,
+            created_at: '2024-01-01T10:00:00Z'
+          },
+          {
+            id: 4,
+            name: 'Ventes',
+            path: '/sales',
+            icon: 'DollarSign',
+            enabled: true,
+            order_index: 4,
+            created_at: '2024-01-01T10:00:00Z'
+          },
+          {
+            id: 5,
+            name: 'Vendeurs',
+            path: '/sellers',
+            icon: 'Store',
+            enabled: true,
+            order_index: 5,
+            created_at: '2024-01-01T10:00:00Z'
+          },
+          {
+            id: 6,
+            name: 'Livraisons',
+            path: '/deliveries',
+            icon: 'Truck',
+            enabled: true,
+            order_index: 6,
+            created_at: '2024-01-01T10:00:00Z'
+          },
+          {
+            id: 7,
+            name: 'Stocks',
+            path: '/stocks',
+            icon: 'Package',
+            enabled: true,
+            order_index: 7,
+            created_at: '2024-01-01T10:00:00Z'
+          },
+          {
+            id: 8,
+            name: 'Finance',
+            path: '/finance',
+            icon: 'DollarSign',
+            enabled: true,
+            order_index: 8,
+            created_at: '2024-01-01T10:00:00Z'
+          },
+          {
+            id: 9,
+            name: 'Tâches',
+            path: '/tasks',
+            icon: 'ClipboardList',
+            enabled: true,
+            order_index: 9,
+            created_at: '2024-01-01T10:00:00Z'
+          },
+          {
+            id: 10,
+            name: 'Marketing',
+            path: '/marketing',
+            icon: 'Share2',
+            enabled: true,
+            order_index: 10,
+            created_at: '2024-01-01T10:00:00Z'
+          },
+          {
+            id: 11,
+            name: 'Achats',
+            path: '/purchases',
+            icon: 'ShoppingCart',
+            enabled: true,
+            order_index: 11,
+            created_at: '2024-01-01T10:00:00Z'
+          }
+        ];
+        
+        setModules(mockModules);
+      } catch (err) {
+        setError('Erreur lors du chargement des modules');
+        console.error('Erreur useModules:', err);
+      } finally {
+        setLoading(false);
       }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['modules'] });
-    }
-  });
+    };
 
-  const toggleModule = useMutation({
-    mutationFn: async ({ id, enabled }: { id: string; enabled: boolean }) => {
-      const { error } = await supabase
-        .from('modules')
-        .update({ enabled })
-        .eq('id', id);
-      
-      if (error) throw error;
-    },
-    onMutate: async ({ id, enabled }) => {
-      await queryClient.cancelQueries({ queryKey: ['modules'] });
-      const previousModules = queryClient.getQueryData<Module[]>(['modules']);
+    fetchModules();
+  }, []);
 
-      if (previousModules) {
-        const newModules = previousModules.map(module =>
-          module.id === id ? { ...module, enabled } : module
-        );
-        queryClient.setQueryData(['modules'], newModules);
-      }
-
-      return { previousModules };
-    },
-    onError: (err, variables, context) => {
-      if (context?.previousModules) {
-        queryClient.setQueryData(['modules'], context.previousModules);
-      }
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['modules'] });
-    }
-  });
-
-  return {
-    modules: modules?.sort((a, b) => a.order - b.order),
-    isLoading,
-    updateModuleOrder,
-    toggleModule
-  };
+  return { modules, loading, error };
 }

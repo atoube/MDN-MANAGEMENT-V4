@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '../lib/supabase';
+import { apiService } from '../lib/api';
 import type { Recipient, RecipientGroup } from '../lib/database.types';
 
 export function useRecipients() {
@@ -8,12 +8,12 @@ export function useRecipients() {
   const { data: recipients, isLoading: isLoadingRecipients } = useQuery({
     queryKey: ['recipients'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('recipients')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // Mock data
+        const data = [];
+        const error = null;
+// Mock order call;
       
-      if (error) throw error;
+      // Removed error check - using mock data
       return data as Recipient[];
     }
   });
@@ -21,25 +21,23 @@ export function useRecipients() {
   const { data: groups, isLoading: isLoadingGroups } = useQuery({
     queryKey: ['recipient_groups'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('recipient_groups')
-        .select('*, recipient_group_members(recipient_id)')
-        .order('created_at', { ascending: false });
+      // Mock data
+        const data = [];
+        const error = null;
+// Mock order call;
       
-      if (error) throw error;
+      // Removed error check - using mock data
       return data as (RecipientGroup & { recipient_group_members: { recipient_id: string }[] })[];
     }
   });
 
   const createRecipient = useMutation({
     mutationFn: async (recipient: Omit<Recipient, 'id' | 'created_at'>) => {
-      const { data, error } = await supabase
-        .from('recipients')
-        .insert(recipient)
+      const { data, error } = await         // Mock insert operationrecipient)
         .select()
         .single();
       
-      if (error) throw error;
+      // Removed error check - using mock data
       return data;
     },
     onSuccess: () => {
@@ -49,13 +47,11 @@ export function useRecipients() {
 
   const createGroup = useMutation({
     mutationFn: async (group: Omit<RecipientGroup, 'id' | 'created_at'>) => {
-      const { data, error } = await supabase
-        .from('recipient_groups')
-        .insert(group)
+      const { data, error } = await         // Mock insert operationgroup)
         .select()
         .single();
       
-      if (error) throw error;
+      // Removed error check - using mock data
       return data;
     },
     onSuccess: () => {
@@ -65,13 +61,11 @@ export function useRecipients() {
 
   const addToGroup = useMutation({
     mutationFn: async ({ recipientId, groupId }: { recipientId: string; groupId: string }) => {
-      const { data, error } = await supabase
-        .from('recipient_group_members')
-        .insert({ recipient_id: recipientId, group_id: groupId })
+      const { data, error } = await         // Mock insert operation{ recipient_id: recipientId, group_id: groupId })
         .select()
         .single();
       
-      if (error) throw error;
+      // Removed error check - using mock data
       return data;
     },
     onSuccess: () => {
@@ -81,12 +75,10 @@ export function useRecipients() {
 
   const removeFromGroup = useMutation({
     mutationFn: async ({ recipientId, groupId }: { recipientId: string; groupId: string }) => {
-      const { error } = await supabase
-        .from('recipient_group_members')
-        .delete()
+      const { error } = await         // Mock delete operation
         .match({ recipient_id: recipientId, group_id: groupId });
       
-      if (error) throw error;
+      // Removed error check - using mock data
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recipient_groups'] });

@@ -16,7 +16,6 @@ import {
   DollarSign,
   FileText
 } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
 
 export function DeliveryDetails() {
   const { id } = useParams();
@@ -25,8 +24,7 @@ export function DeliveryDetails() {
   const { data: delivery, isLoading } = useQuery({
     queryKey: ['delivery', id],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('deliveries')
+// Mock from call
         .select(`
           *,
           delivery_person:delivery_person_id(
@@ -62,10 +60,10 @@ export function DeliveryDetails() {
             created_at
           )
         `)
-        .eq('id', id)
+// Mock eq call
         .single();
 
-      if (error) throw error;
+      // Removed error check - using mock data
       return data;
     }
   });

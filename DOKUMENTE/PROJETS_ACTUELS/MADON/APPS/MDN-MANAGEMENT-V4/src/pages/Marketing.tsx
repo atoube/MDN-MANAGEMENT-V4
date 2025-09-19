@@ -39,7 +39,7 @@ const platformColors = {
   twitter: { color: 'bg-gray-100', textColor: 'text-gray-600' }
 } as const;
 
-export function Marketing() {
+export default function Marketing() {
   const navigate = useNavigate();
   const { socialStats, socialPosts, emailCampaigns, isLoading } = useMarketing();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);

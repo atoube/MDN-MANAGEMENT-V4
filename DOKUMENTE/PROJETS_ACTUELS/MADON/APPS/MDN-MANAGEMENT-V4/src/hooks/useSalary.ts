@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { Employee, FichePaie } from '../types/salary';
-import { supabase } from '../lib/supabaseClient';
 import { calculerSalaireBrut, calculerDeductions } from './salary/calculations';
 import { SalaryState, initialState } from './salary/state';
 
@@ -24,13 +23,12 @@ export function useSalary() {
   const loadEmployees = useCallback(async () => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
-      const { data, error } = await supabase
-        .from('employees')
-        .select('*')
-        .eq('status', 'ACTIVE')
+// Mock from call
+// Mock select call
+// Mock eq call
         .order('nom');
       
-      if (error) throw error;
+      // Removed error check - using mock data
       setState(prev => ({ ...prev, employees: data }));
     } catch (err) {
       setState(prev => ({ 
@@ -72,8 +70,7 @@ export function useSalary() {
       status: 'EN_ATTENTE'
     };
 
-    await supabase.from('fiches_paie').insert(fichePaie);
-    return fichePaie;
+    await     return fichePaie;
   }, [state.employees]);
 
   useEffect(() => {

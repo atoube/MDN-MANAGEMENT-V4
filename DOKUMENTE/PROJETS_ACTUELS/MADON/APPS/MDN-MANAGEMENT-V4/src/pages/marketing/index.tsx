@@ -12,8 +12,7 @@ export default function Marketing() {
 
   const handleSettingsSave = async (config: MarketingConfig) => {
     try {
-      // Ici, vous pouvez sauvegarder la configuration dans Supabase ou un autre stockage
-      console.log('Configuration sauvegardée:', config);
+            console.log('Configuration sauvegardée:', config);
       toast({
         title: 'Configuration sauvegardée',
         description: 'Les paramètres de marketing ont été mis à jour avec succès.',

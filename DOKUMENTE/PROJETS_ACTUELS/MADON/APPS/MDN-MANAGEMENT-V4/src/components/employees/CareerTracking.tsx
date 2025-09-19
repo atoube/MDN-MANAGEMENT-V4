@@ -1,10 +1,9 @@
 import React from 'react';
-import { Dialog } from '@headlessui/react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/Dialog';
 import { useForm } from 'react-hook-form';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
-import { X } from 'lucide-react';
 import type { Employee } from '../../types';
 
 interface CareerTrackingProps {
@@ -46,11 +45,16 @@ export function CareerTracking({
   onSubmit,
   employee
 }: CareerTrackingProps) {
+  const validateDates = (start: string, end?: string) => {
+    if (!end) return true;
+    return new Date(start) <= new Date(end);
+  };
+
   const {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitting }
+    formState: { isSubmitting }
   } = useForm<FormData>({
     defaultValues: {
       career_history: employee.career_history || [],
@@ -72,101 +76,102 @@ export function CareerTracking({
   };
 
   return (
-    <Dialog
-      open={isOpen}
-      onClose={onClose}
-      className="relative z-50"
-    >
-      <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>
+            Suivi professionnel de {employee.first_name} {employee.last_name}
+          </DialogTitle>
+        </DialogHeader>
 
-      <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="mx-auto max-w-2xl rounded-lg bg-white p-6 shadow-xl">
-          <div className="flex justify-between items-center mb-4">
-            <Dialog.Title className="text-lg font-medium text-gray-900">
-              Suivi professionnel de {employee.first_name} {employee.last_name}
-            </Dialog.Title>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-500"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-
-          <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmitForm)} className="space-y-6">
+          <div className="space-y-4">
+            <h3 className="text-md font-medium text-gray-900">Historique des postes</h3>
             <div className="space-y-4">
-              <h3 className="text-md font-medium text-gray-900">Historique des postes</h3>
-              <div className="space-y-4">
-                {watch('career_history')?.map((_, index) => (
-                  <div key={index} className="grid grid-cols-2 gap-4 p-4 border rounded">
+              {watch('career_history')?.map((_, index) => (
+                <div key={index} className="grid grid-cols-2 gap-4 p-4 border rounded">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Poste</label>
                     <Input
-                      label="Poste"
                       {...register(`career_history.${index}.position`)}
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Département</label>
                     <Input
-                      label="Département"
                       {...register(`career_history.${index}.department`)}
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Date de début</label>
                     <Input
                       type="date"
-                      label="Date de début"
                       {...register(`career_history.${index}.start_date`)}
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Date de fin</label>
                     <Input
                       type="date"
-                      label="Date de fin"
                       {...register(`career_history.${index}.end_date`)}
                     />
+                  </div>
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700">Réalisations</label>
                     <Input
-                      label="Réalisations"
-                      className="col-span-2"
                       {...register(`career_history.${index}.achievements`)}
                     />
                   </div>
-                ))}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-md font-medium text-gray-900">Objectifs professionnels</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Court terme</label>
+                <Input
+                  {...register('professional_goals.short_term')}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Long terme</label>
+                <Input
+                  {...register('professional_goals.long_term')}
+                />
               </div>
             </div>
+          </div>
 
+          <div className="space-y-4">
+            <h3 className="text-md font-medium text-gray-900">Formations</h3>
             <div className="space-y-4">
-              <h3 className="text-md font-medium text-gray-900">Objectifs professionnels</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Court terme</label>
-                  <Input
-                    label="Objectifs (séparés par des virgules)"
-                    {...register('professional_goals.short_term')}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Long terme</label>
-                  <Input
-                    label="Objectifs (séparés par des virgules)"
-                    {...register('professional_goals.long_term')}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-md font-medium text-gray-900">Formations</h3>
-              <div className="space-y-4">
-                {watch('training_history')?.map((_, index) => (
-                  <div key={index} className="grid grid-cols-2 gap-4 p-4 border rounded">
+              {watch('training_history')?.map((_, index) => (
+                <div key={index} className="grid grid-cols-2 gap-4 p-4 border rounded">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Nom de la formation</label>
                     <Input
-                      label="Nom de la formation"
                       {...register(`training_history.${index}.name`)}
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Fournisseur</label>
                     <Input
-                      label="Fournisseur"
                       {...register(`training_history.${index}.provider`)}
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Date</label>
                     <Input
                       type="date"
-                      label="Date"
                       {...register(`training_history.${index}.date`)}
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Statut</label>
                     <Select
-                      label="Statut"
                       options={[
                         { value: 'completed', label: 'Terminée' },
                         { value: 'in_progress', label: 'En cours' },
@@ -175,28 +180,28 @@ export function CareerTracking({
                       {...register(`training_history.${index}.status`)}
                     />
                   </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
+          </div>
 
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={onClose}
-              >
-                Fermer
-              </Button>
-              <Button
-                type="submit"
-                isLoading={isSubmitting}
-              >
-                Enregistrer
-              </Button>
-            </div>
-          </form>
-        </Dialog.Panel>
-      </div>
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={onClose}
+            >
+              Fermer
+            </Button>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+            >
+              Enregistrer
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 } 

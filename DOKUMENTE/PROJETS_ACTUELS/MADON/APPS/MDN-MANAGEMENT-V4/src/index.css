@@ -1,3 +1,167 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Variables CSS pour les thèmes */
+:root {
+  /* Couleurs de base */
+  --color-primary: 59 130 246; /* blue-500 */
+  --color-primary-dark: 37 99 235; /* blue-600 */
+  --color-secondary: 107 114 128; /* gray-500 */
+  --color-accent: 245 158 11; /* amber-500 */
+  
+  /* Couleurs de fond */
+  --color-bg-primary: 255 255 255; /* white */
+  --color-bg-secondary: 249 250 251; /* gray-50 */
+  --color-bg-tertiary: 243 244 246; /* gray-100 */
+  
+  /* Couleurs de texte */
+  --color-text-primary: 17 24 39; /* gray-900 */
+  --color-text-secondary: 107 114 128; /* gray-500 */
+  --color-text-muted: 156 163 175; /* gray-400 */
+  
+  /* Couleurs de bordure */
+  --color-border: 229 231 235; /* gray-200 */
+  --color-border-focus: 59 130 246; /* blue-500 */
+}
+
+/* Thème sombre */
+.dark {
+  --color-bg-primary: 17 24 39; /* gray-900 */
+  --color-bg-secondary: 31 41 55; /* gray-800 */
+  --color-bg-tertiary: 55 65 81; /* gray-700 */
+  
+  --color-text-primary: 243 244 246; /* gray-100 */
+  --color-text-secondary: 156 163 175; /* gray-400 */
+  --color-text-muted: 107 114 128; /* gray-500 */
+  
+  --color-border: 55 65 81; /* gray-700 */
+  --color-border-focus: 59 130 246; /* blue-500 */
+}
+
+/* Schémas de couleurs */
+.blue {
+  --color-primary: 59 130 246; /* blue-500 */
+  --color-primary-dark: 37 99 235; /* blue-600 */
+}
+
+.green {
+  --color-primary: 34 197 94; /* green-500 */
+  --color-primary-dark: 22 163 74; /* green-600 */
+}
+
+.purple {
+  --color-primary: 139 92 246; /* violet-500 */
+  --color-primary-dark: 124 58 237; /* violet-600 */
+}
+
+.orange {
+  --color-primary: 249 115 22; /* orange-500 */
+  --color-primary-dark: 234 88 12; /* orange-600 */
+}
+
+.red {
+  --color-primary: 239 68 68; /* red-500 */
+  --color-primary-dark: 220 38 38; /* red-600 */
+}
+
+/* Transitions fluides */
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--color-bg-secondary));
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--color-secondary));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--color-text-secondary));
+}
+
+/* Focus visible pour l'accessibilité */
+.focus-visible:focus {
+  outline: 2px solid rgb(var(--color-border-focus));
+  outline-offset: 2px;
+}
+
+/* Animations d'entrée */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* Styles globaux pour les menus déroulants - éviter la transparence */
+@layer components {
+  /* SelectContent - menus déroulants */
+  [data-radix-select-content] {
+    background-color: white !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  /* PopoverContent - popovers */
+  [data-radix-popover-content] {
+    background-color: white !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  /* DropdownMenuContent - menus contextuels */
+  [data-radix-dropdown-menu-content] {
+    background-color: white !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  /* Command - menus de recherche */
+  [cmdk-root] {
+    background-color: white !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  }
+
+  /* SheetContent - panneaux latéraux */
+  [data-radix-dialog-content][role="dialog"] {
+    background-color: white !important;
+  }
+
+  /* DialogContent - modales */
+  [data-radix-dialog-content] {
+    background-color: white !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  }
+}

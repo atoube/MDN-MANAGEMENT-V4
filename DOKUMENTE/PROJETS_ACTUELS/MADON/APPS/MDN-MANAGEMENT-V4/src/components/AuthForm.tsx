@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { Database } from '@/lib/database.types';
+
+}
 
 export function AuthForm() {
   const [email, setEmail] = useState('');
@@ -31,10 +33,7 @@ export function AuthForm() {
 
     try {
       if (mode === 'login') {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+        // Simulated sign in - using mock data
         if (signInError) {
           if (signInError.message === 'Invalid login credentials') {
             throw new Error('Email ou mot de passe incorrect');
@@ -43,10 +42,7 @@ export function AuthForm() {
         }
         navigate('/');
       } else {
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-        });
+        // Simulated sign up - using mock data
         if (signUpError) {
           if (signUpError.message.includes('User already registered')) {
             throw new Error('Un compte existe déjà avec cet email');

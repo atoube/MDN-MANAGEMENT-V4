@@ -130,7 +130,7 @@ exports.handler = async (event, context) => {
 
         const [updateResult] = await connection.execute(
           'UPDATE tasks SET title = ?, description = ?, status = ?, priority = ?, assigned_to = ?, due_date = ?, completed_at = ?, updated_at = NOW() WHERE id = ?',
-          [newTitle, newDescription, newStatus, newPriority, newAssignedTo, newDueDate, completedAt, taskId]
+          [newTitle || null, newDescription || null, newStatus || null, newPriority || null, newAssignedTo || null, newDueDate || null, completedAt, taskId]
         );
 
         if (updateResult.affectedRows === 0) {

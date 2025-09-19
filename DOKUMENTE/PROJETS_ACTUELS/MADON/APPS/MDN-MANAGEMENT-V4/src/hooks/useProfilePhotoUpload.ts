@@ -49,7 +49,7 @@ export function useProfilePhotoUpload() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_id: user.id,
+          user_id: parseInt(user.id),
           photo_data: photoData,
           photo_type: 'profile'
         }),
@@ -93,7 +93,7 @@ export function useProfilePhotoUpload() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_id: user.id,
+          user_id: parseInt(user.id),
           photo_data: null,
           photo_type: 'profile'
         }),

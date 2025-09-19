@@ -83,7 +83,7 @@ export function useEmployeesAPI() {
   }, []);
 
   // Mettre à jour un employé
-  const updateEmployee = useCallback(async (id: number, employeeData: Partial<Employee>) => {
+  const updateEmployee = useCallback(async (id: number | string, employeeData: Partial<Employee>) => {
     try {
       const response = await fetch(`${API_BASE_URL}/employees/${id}`, {
         method: 'PUT',

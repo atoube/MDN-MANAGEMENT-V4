@@ -213,41 +213,8 @@ exports.handler = async (event, context) => {
   } catch (error) {
     console.error('Erreur lors de la gestion des tâches:', error);
     
-    // Fallback vers des données mockées en cas d'erreur pour GET
-    if (event.httpMethod === 'GET') {
-    const mockTasks = [
-      {
-        id: 1,
-        title: 'Refonte de l\'interface utilisateur',
-        description: 'Améliorer l\'expérience utilisateur de l\'application',
-        status: 'in_progress',
-        priority: 'high',
-        assigned_to: 1,
-        created_by: 2,
-        due_date: '2024-12-31',
-        created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-15T00:00:00Z'
-      },
-      {
-        id: 2,
-        title: 'Documentation technique',
-        description: 'Rédiger la documentation pour les nouveaux développeurs',
-        status: 'todo',
-        priority: 'medium',
-        assigned_to: 2,
-        created_by: 1,
-        due_date: '2024-12-15',
-        created_at: '2024-01-05T00:00:00Z',
-        updated_at: '2024-01-15T00:00:00Z'
-      }
-    ];
-
-    return {
-      statusCode: 200,
-        headers: { ...headers, 'Content-Type': 'application/json' },
-      body: JSON.stringify(mockTasks),
-    };
-    }
+    // En cas d'erreur, retourner une erreur plutôt que des données mockées
+    // pour garantir la persistance des vraies données
 
     return {
       statusCode: 500,

@@ -116,14 +116,19 @@ exports.handler = async (event, context) => {
         
         if (updateFields.length > 0) {
           updateValues.push(employeeId);
-          await connection.execute(`
+          const [updateResult] = await connection.execute(`
             UPDATE users 
             SET ${updateFields.join(', ')}, updated_at = NOW()
             WHERE id = ?
           `, updateValues);
           
-          console.log('✅ Employé mis à jour:', employeeId);
-          result = { id: employeeId, ...updateData };
+          if (updateResult.affectedRows > 0) {
+            console.log('✅ Employé mis à jour avec succès:', employeeId);
+            result = { id: employeeId, ...updateData, success: true };
+          } else {
+            console.log('⚠️ Aucun employé trouvé avec l\'ID:', employeeId);
+            result = { error: 'Employé non trouvé' };
+          }
         } else {
           result = { error: 'Aucune donnée à mettre à jour' };
         }

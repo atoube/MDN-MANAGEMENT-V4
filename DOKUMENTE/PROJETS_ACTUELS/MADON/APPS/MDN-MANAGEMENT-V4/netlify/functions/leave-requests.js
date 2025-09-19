@@ -71,17 +71,49 @@ exports.handler = async (event, context) => {
       case 'POST':
         // Créer une nouvelle demande de congé
         const newRequest = JSON.parse(event.body);
+        const { employee_id, start_date, end_date, type, reason, status, created_by_admin } = newRequest;
+        
+        // Vérifier que l'employé existe
+        const [employeeCheck] = await connection.execute(
+          'SELECT id, first_name, last_name, role FROM users WHERE id = ?',
+          [employee_id]
+        );
+        
+        if (employeeCheck.length === 0) {
+          return {
+            statusCode: 404,
+            headers: corsHeaders,
+            body: JSON.stringify({ error: 'Employé non trouvé' })
+          };
+        }
+        
         const [insertResult] = await connection.execute(`
           INSERT INTO leave_requests (
             employee_id, start_date, end_date, type, reason, status
           ) VALUES (?, ?, ?, ?, ?, ?)
         `, [
-          newRequest.employee_id,
-          newRequest.start_date,
-          newRequest.end_date,
-          newRequest.type,
-          newRequest.reason,
-          newRequest.status || 'pending'
+          employee_id,
+          start_date,
+          end_date,
+          type,
+          reason,
+          status || 'pending'
+        ]);
+        
+        // Créer une notification pour l'employé concerné
+        const notificationMessage = created_by_admin 
+          ? `Une demande de congé a été créée pour vous par un administrateur (${type} du ${start_date} au ${end_date})`
+          : `Votre demande de congé a été créée avec succès (${type} du ${start_date} au ${end_date})`;
+          
+        await connection.execute(`
+          INSERT INTO notifications (user_id, title, message, type, is_read)
+          VALUES (?, ?, ?, ?, ?)
+        `, [
+          employee_id,
+          created_by_admin ? 'Demande de congé créée par un admin' : 'Demande de congé créée',
+          notificationMessage,
+          'info',
+          false
         ]);
         
         console.log('✅ Nouvelle demande de congé créée:', insertResult.insertId);
@@ -92,6 +124,22 @@ exports.handler = async (event, context) => {
         // Mettre à jour une demande de congé (approbation/rejet)
         const requestId = event.path.split('/').pop();
         const updateData = JSON.parse(event.body);
+        
+        // Récupérer les informations de la demande avant mise à jour
+        const [currentRequest] = await connection.execute(`
+          SELECT lr.*, u.first_name, u.last_name 
+          FROM leave_requests lr 
+          LEFT JOIN users u ON lr.employee_id = u.id 
+          WHERE lr.id = ?
+        `, [requestId]);
+        
+        if (currentRequest.length === 0) {
+          return {
+            statusCode: 404,
+            headers: corsHeaders,
+            body: JSON.stringify({ error: 'Demande de congé non trouvée' })
+          };
+        }
         
         const updateFields = [];
         const updateValues = [];
@@ -110,6 +158,30 @@ exports.handler = async (event, context) => {
             SET ${updateFields.join(', ')}, updated_at = NOW()
             WHERE id = ?
           `, updateValues);
+          
+          // Créer une notification si le statut change
+          if (updateData.status && updateData.status !== currentRequest[0].status) {
+            const statusMessages = {
+              'approved': 'Votre demande de congé a été approuvée',
+              'rejected': 'Votre demande de congé a été rejetée',
+              'pending': 'Votre demande de congé est en attente'
+            };
+            
+            const notificationMessage = statusMessages[updateData.status] || 
+              `Le statut de votre demande de congé a été modifié: ${updateData.status}`;
+              
+            await connection.execute(`
+              INSERT INTO notifications (user_id, title, message, type, is_read)
+              VALUES (?, ?, ?, ?, ?)
+            `, [
+              currentRequest[0].employee_id,
+              'Statut de demande de congé modifié',
+              notificationMessage,
+              updateData.status === 'approved' ? 'success' : 
+              updateData.status === 'rejected' ? 'error' : 'info',
+              false
+            ]);
+          }
           
           console.log('✅ Demande de congé mise à jour:', requestId);
           result = { id: requestId, ...updateData };
